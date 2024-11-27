@@ -1,0 +1,74 @@
+[gd_scene load_steps=7 format=3 uid="uid://6npd4asdgf85"]
+
+[ext_resource type="Script" path="res://Scripts/light.gd" id="1_pjmeq"]
+[ext_resource type="Script" path="res://traffic_light.gd" id="1_vm3ms"]
+[ext_resource type="Script" path="res://AI/FSM/finite_state_machine.gd" id="2_b3euk"]
+[ext_resource type="Texture2D" uid="uid://bh2x8o6x3nmo1" path="res://assets/trafficNoLights.png" id="2_qymw1"]
+
+[sub_resource type="Gradient" id="Gradient_w00na"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_55hoh"]
+gradient = SubResource("Gradient_w00na")
+
+[node name="Node2D" type="Node2D"]
+
+[node name="TrafficLight" type="StaticBody2D" parent="."]
+position = Vector2(371, 180)
+script = ExtResource("1_vm3ms")
+
+[node name="FiniteStateMachine" type="Node" parent="TrafficLight" node_paths=PackedStringArray("actor")]
+script = ExtResource("2_b3euk")
+actor = NodePath("..")
+
+[node name="Timer" type="Timer" parent="TrafficLight/FiniteStateMachine"]
+one_shot = true
+
+[node name="RedLight" type="Sprite2D" parent="TrafficLight"]
+modulate = Color(0.360784, 0.211765, 0.211765, 1)
+position = Vector2(-4, -42)
+scale = Vector2(0.5625, 0.625)
+texture = SubResource("GradientTexture2D_55hoh")
+script = ExtResource("1_pjmeq")
+light_off = Color(0.255522, 5.20414e-07, 2.64719e-07, 1)
+light_on = Color(1, 0.196078, 0.203922, 1)
+
+[node name="YellowLight" type="Sprite2D" parent="TrafficLight"]
+position = Vector2(-4, -0.999996)
+scale = Vector2(0.5625, 0.625)
+texture = SubResource("GradientTexture2D_55hoh")
+script = ExtResource("1_pjmeq")
+light_off = Color(0.218639, 0.193646, 0, 1)
+light_on = Color(0.993675, 0.8966, 0.343923, 1)
+
+[node name="GreenLight" type="Sprite2D" parent="TrafficLight"]
+position = Vector2(-3, 42)
+scale = Vector2(0.5625, 0.625)
+texture = SubResource("GradientTexture2D_55hoh")
+script = ExtResource("1_pjmeq")
+light_off = Color(4.51226e-08, 0.139369, 3.60981e-08, 1)
+light_on = Color(0, 0.831373, 0, 1)
+
+[node name="TrafficStruct" type="Sprite2D" parent="TrafficLight"]
+texture_filter = 1
+position = Vector2(-3.05176e-05, 0)
+texture = ExtResource("2_qymw1")
+
+[node name="Button" type="Button" parent="."]
+offset_left = 455.0
+offset_top = 118.0
+offset_right = 463.0
+offset_bottom = 126.0
+text = "Start"
+
+[node name="Button2" type="Button" parent="."]
+offset_left = 455.0
+offset_top = 160.0
+offset_right = 501.0
+offset_bottom = 191.0
+text = "Off"
+
+[connection signal="timeout" from="TrafficLight/FiniteStateMachine/Timer" to="TrafficLight" method="_on_timer_timeout"]
+[connection signal="pressed" from="Button" to="TrafficLight" method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="TrafficLight" method="_on_button_2_pressed"]
